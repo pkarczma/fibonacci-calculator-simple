@@ -1,70 +1,112 @@
-# Getting Started with Create React App
+# React Frontend Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React frontend application built with Create React App, featuring Docker containerization and automated deployment to AWS Elastic Beanstalk.
 
-## Available Scripts
+## 🚀 Features
 
-In the project directory, you can run:
+- **React 18** with modern hooks and functional components
+- **Docker** containerization for both development and production
+- **Automated CI/CD** pipeline with GitHub Actions
+- **AWS Elastic Beanstalk** deployment
+- **Multi-stage Docker builds** for optimized production images
+- **Docker Compose** development environment
 
-### `npm start`
+## 📋 Prerequisites
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Docker** and Docker Compose
+- **AWS account** (for deployment)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🛠️ Getting Started
 
-### `npm test`
+### Quick Development Setup (Recommended)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Use Docker Compose to quickly spin up the entire development environment with a single command. This approach automatically handles all dependencies and provides both the web server and test runner.
 
-### `npm run build`
+1. **Start the development environment:**
+   ```bash
+   docker-compose -f docker-compose-dev.yml up
+   ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+   This will start:
+   - **Web server** on port 3000 with live reloading
+   - **Test runner** in watch mode
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. **Access the application:**
+   - Frontend: [http://localhost:3000](http://localhost:3000)
+   - Tests run automatically in the background
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. **Stop the environment:**
+   ```bash
+   docker-compose -f docker-compose-dev.yml down
+   ```
 
-### `npm run eject`
+### Advanced Docker Usage
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+In order to have more control over the Docker build process or to understand the underlying containerization, use these manual Docker commands.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+**Development Container:**
+```bash
+docker build -f Dockerfile.dev -t frontend-dev .
+docker run -p 3000:3000 -v $(pwd):/app -v /app/node_modules frontend-dev
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+**Production Container:**
+```bash
+docker build -t frontend-prod .
+docker run -p 80:80 frontend-prod
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+The production build uses a multi-stage approach:
+1. **Build stage**: Uses Node.js to build the React app
+2. **Runtime stage**: Uses Nginx to serve the static files
 
-## Learn More
+## 🚀 Deployment
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Automated Deployment (GitHub Actions)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The application automatically deploys to AWS Elastic Beanstalk when code is pushed to the `main` branch.
 
-### Code Splitting
+**Deployment Pipeline:**
+1. **Build**: Creates Docker image using development Dockerfile
+2. **Test**: Runs the test suite in CI environment
+3. **Package**: Creates deployment package
+4. **Deploy**: Deploys to AWS Elastic Beanstalk
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+**Required GitHub Secrets:**
+- `DOCKER_USERNAME`: Docker Hub username
+- `DOCKER_PASSWORD`: Docker Hub password  
+- `AWS_ACCESS_KEY_ID`: AWS access key
+- `AWS_SECRET_KEY`: AWS secret key
 
-### Analyzing the Bundle Size
+### Manual Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+1. **Build the production image:**
+   ```bash
+   docker build -t pkarczmarczyk/docker-react .
+   ```
 
-### Making a Progressive Web App
+2. **Push to Docker Hub:**
+   ```bash
+   docker push pkarczmarczyk/docker-react
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+3. **Deploy to AWS EB:**
+   - Create application package
+   - Upload to Elastic Beanstalk environment
 
-### Advanced Configuration
+## 🌐 AWS Elastic Beanstalk Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+**Application Details:**
+- **Application Name**: frontend
+- **Environment**: Frontend-env
+- **Region**: us-east-2
+- **Platform**: Docker
 
-### Deployment
+The deployment uses AWS Elastic Beanstalk for easy scaling and management of the containerized application.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 📚 Learn More
 
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- [Create React App Documentation](https://facebook.github.io/create-react-app/docs/getting-started)
+- [React Documentation](https://reactjs.org/)
+- [Docker Documentation](https://docs.docker.com/)
+- [AWS Elastic Beanstalk](https://aws.amazon.com/elasticbeanstalk/)
